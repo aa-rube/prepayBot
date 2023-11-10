@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -101,9 +102,17 @@ public class CreateAdminMessage {
         return getSendMessage(chatId, buffer.toString(), keyboard.getBackMain());
     }
 
-    public SendMessage cancelPay(Long chatId) {
+    public SendMessage cancelPay(Long chatId, String username) {
         buffer.setLength(0);
-        buffer.append("Платеж отменен.");
+        buffer.append("Платеж отменен. Контакт пользователя: @").append(username);
         return getSendMessage(chatId, buffer.toString(), null);
+    }
+
+    public SendDocument approvePay(long adminChatId, File pdf) {
+        SendDocument docMsg = new SendDocument();
+        docMsg.setChatId(adminChatId);
+        docMsg.setDocument(new InputFile(pdf));
+        docMsg.setCaption("Документ готов и передан плательшику.\nВы можете его сохранить и распечатать.");
+        return docMsg;
     }
 }

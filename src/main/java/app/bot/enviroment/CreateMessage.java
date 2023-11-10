@@ -87,13 +87,13 @@ public class CreateMessage {
 
     public SendMessage cancelPay(Long chatId) {
         buffer.setLength(0);
-        buffer.append("Платеж отменен.\nДля связи со службой заботы о клиентах нажмите /customercentre");
+        buffer.append("Платеж отменен.\nДля связи со службой заботы нажмите /customercentre");
         return getSendMessage(chatId, buffer.toString(), null);
     }
 
     public SendMessage startSupport(Long chatId) {
         buffer.setLength(0);
-        buffer.append("Можно задать Ваш вопрос прямо в чате с ботом. Наш менеджер ответит Вам в самое ближайшее время");
+        buffer.append("Можно задать Ваш вопрос прямо в чате с ботом.\n\nНаш менеджер ответит Вам в самое ближайшее время");
         return getSendMessage(chatId, buffer.toString(), null);
     }
 
@@ -109,7 +109,15 @@ public class CreateMessage {
         SendDocument docMsg = new SendDocument();
         docMsg.setChatId(chatUserId);
         docMsg.setDocument(new InputFile(pdf));
-        docMsg.setCaption("Документ готов. Вы можете его сохранить и распечатать.");
+        docMsg.setCaption("Документ готов.\nВы можете его сохранить и распечатать." +
+                "\n\nПо всем вопросам можете обращаться в нашу службу заботы /customercentre");
         return docMsg;
+    }
+
+    public SendMessage fileDidNotSendToUser(Long chatUserId) {
+        buffer.setLength(0);
+        buffer.append("Ваш платеж принят, но видмо произошла ошибка формирования чека.")
+                .append("\nНапишите в нашу службу заботы за доподнительной информацией /customercentre");
+        return getSendMessage(chatUserId, buffer.toString(), null);
     }
 }
