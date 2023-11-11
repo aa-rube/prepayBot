@@ -52,18 +52,14 @@ public class Chat extends TelegramLongPollingBot {
     private final Set<Long> waitForPayScreenShot = Collections.synchronizedSet(new HashSet<>());
     private final Map<Long, LocalDateTime> chattingWithAdmin = Collections.synchronizedMap(new HashMap<>());
     private final Map<Long, String> userName = Collections.synchronizedMap(new HashMap<>());
-
-
     @Override
     public String getBotUsername() {
         return botConfig.getBotName();
     }
-
     @Override
     public String getBotToken() {
         return botConfig.getToken();
     }
-
     @PostConstruct
     private void init() {
         thbRate.setThbRate(compareAPI.getTHBPrice());
@@ -73,7 +69,6 @@ public class Chat extends TelegramLongPollingBot {
             cards.add(c.getCardNumber());
         }
     }
-
     @Scheduled(fixedRate = 10000)
     public void getUpdate() {
         List<Long> idList = new ArrayList<>();
@@ -94,7 +89,6 @@ public class Chat extends TelegramLongPollingBot {
 
         idList.clear();
     }
-
     @Override
     public void onUpdateReceived(Update update) {
         Thread thread = new Thread(() -> {
@@ -124,7 +118,7 @@ public class Chat extends TelegramLongPollingBot {
 
             if (update.hasCallbackQuery()) {
                 Long chatId = update.getCallbackQuery().getMessage().getChatId();
-                callBackDataHandler(chatId, update.getCallbackQuery().getData());
+                callBackDataHandler(update, chatId, update.getCallbackQuery().getData());
             }
         });
         thread.start();
@@ -164,18 +158,19 @@ public class Chat extends TelegramLongPollingBot {
     private void commandHandle(Update update, Long chatId, String command) {
         Long adminsChat = botConfig.getAdminsChat();
         if (command.equals("/start")) {
-            if (chatId == adminsChat) {
+            if (chatId.equals(adminsChat)) {
                 executeMsg(adminMessage.getStartMessage(adminsChat));
+                init();
+                startEnterCardData.remove(chatId);
                 return;
             }
             startEnterName.add(chatId);
             userName.put(chatId, update.getMessage().getFrom().getUserName());
-
             executeMsg(createMessage.getStartMessage(chatId));
             return;
         }
 
-        if (command.contains("_deleteCard@bereza_property_prepay_bot") && chatId == adminsChat) {
+        if (command.contains("_deleteCard@bereza_property_prepay_bot") && chatId.equals(adminsChat)) {
             int id = Integer.parseInt(command.split("_")[1]);
             if (cardService.deleteById(id)) {
                 init();
@@ -200,6 +195,7 @@ public class Chat extends TelegramLongPollingBot {
     private synchronized void textHandler(Update update, Long chatId, String text) {
 
         if (chattingWithAdmin.containsKey(chatId)) {
+            deleteKeyboard(chatId);
             chattingWithAdmin.put(chatId, LocalDateTime.now());
             forwardMessage(update.getMessage());
             return;
@@ -240,14 +236,14 @@ public class Chat extends TelegramLongPollingBot {
         if (startEnterCardData.contains(chatId)) {
             if (text.trim().length() == 16 && cardService.save(text.trim())) {
                 executeMsg(adminMessage.cardSaved(chatId, text));
-                init();
             } else {
                 executeMsg(createMessage.wrongInput(chatId));
             }
+            init();
         }
     }
 
-    private void callBackDataHandler(Long chatId, String data) {
+    private void callBackDataHandler(Update update, Long chatId, String data) {
         try {
             deleteKeyboard(chatId);
         } catch (Exception e) {}
@@ -295,10 +291,9 @@ public class Chat extends TelegramLongPollingBot {
             startEnterCardData.clear();
             executeMsg(adminMessage.getStartMessage(chatId));
             return;
-
         }
 
-        if (data.contains("ok_") && chatId == botConfig.getAdminsChat()) {
+        if (data.contains("ok_") && chatId.equals(botConfig.getAdminsChat())) {
             Long chatUserId = Long.valueOf(data.split("_")[1]);
             userName.remove(chatUserId);
             File pdf = PdfEditor.addTextToPdf(fullName.get(chatUserId), sumInRub.get(chatUserId).toString());
@@ -316,11 +311,24 @@ public class Chat extends TelegramLongPollingBot {
             return;
         }
 
-        if (data.contains("no_") && chatId == botConfig.getAdminsChat()) {
+        if (data.contains("no_") && chatId.equals(botConfig.getAdminsChat())) {
             Long chatUserId = Long.valueOf(data.split("_")[1]);
 
             executeMsg(createMessage.cancelPay(chatUserId));
             executeMsg(adminMessage.cancelPay(botConfig.getAdminsChat(), userName.get(chatUserId)));
+        }
+
+        if (data.equals("closeChat")) {
+            chattingWithAdmin.remove(chatId);
+            executeMsg(createMessage.stopSupportChat(chatId));
+        }
+
+        if (data.equals("payAgain")) {
+            startEnterSum.remove(chatId);
+            sumInRub.remove(chatId);
+            startEnterName.add(chatId);
+            userName.put(chatId, update.getCallbackQuery().getMessage().getFrom().getUserName());
+            executeMsg(createMessage.getStartMessage(chatId));
         }
     }
 
@@ -330,9 +338,8 @@ public class Chat extends TelegramLongPollingBot {
         forwardMessage.setChatId(botConfig.getSupportChat());
         forwardMessage.setFromChatId(messageContent.getChatId().toString());
         forwardMessage.setMessageId(messageContent.getMessageId());
-
         try {
-            execute(forwardMessage);
+           chatIdMsgId.put(Long.valueOf(messageContent.getChatId().toString()),execute(forwardMessage).getMessageId());
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

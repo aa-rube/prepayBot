@@ -21,6 +21,7 @@ public class CreateMessage {
     @Autowired
     Keyboard keyboard;
     private final StringBuffer buffer = new StringBuffer();
+
     private synchronized SendMessage getSendMessage(Long chatId, String text, InlineKeyboardMarkup markup) {
         SendMessage msg = new SendMessage();
         msg.setChatId(chatId);
@@ -66,16 +67,18 @@ public class CreateMessage {
 
     public SendMessage getRandomCard(Long chatId, Map<Long, Integer> sumInRub, Map<Long, String> fullName, List<String> cards) {
         buffer.setLength(0);
-        try {
-            int randomCard = ThreadLocalRandom.current().nextInt(0, cards.size() - 1);
+        String card = RandomSelector.getRandomString(cards);
+
+        if (card != null) {
             buffer.append("ФИО: ").append(fullName.get(chatId)).append("\n")
                     .append("Сумма: ").append(sumInRub.get(chatId)).append(".00RUB\n\n")
-                   .append("Карта для перевода: \n").append("<code>").append(cards.get(randomCard)).append("</code>\n\n")
+                    .append("Карта для перевода: \n")
+                    .append("<code>").append(card).append("</code>\n\n")
                     .append("После перевода нажмите кнопку и отправьте скриншот об оплате в этот чат.");
             return getSendMessage(chatId, buffer.toString(), keyboard.iPaidForThis());
-        } catch (Exception e) {
+        } else {
             buffer.append("Вот это да.. Админ еще ни одной карты не добавил. Напишите в поддержку: /customercentre");
-            return getSendMessage(chatId, buffer.toString(), null);
+            return getSendMessage(chatId, buffer.toString(), keyboard.getAnotherTryToPay());
         }
     }
 
@@ -88,21 +91,21 @@ public class CreateMessage {
     public SendMessage cancelPay(Long chatId) {
         buffer.setLength(0);
         buffer.append("Платеж отменен.\nДля связи со службой заботы нажмите /customercentre");
-        return getSendMessage(chatId, buffer.toString(), null);
+        return getSendMessage(chatId, buffer.toString(), keyboard.getAnotherTryToPay());
     }
 
     public SendMessage startSupport(Long chatId) {
         buffer.setLength(0);
         buffer.append("Можно задать Ваш вопрос прямо в чате с ботом.\n\nНаш менеджер ответит Вам в самое ближайшее время");
-        return getSendMessage(chatId, buffer.toString(), null);
+        return getSendMessage(chatId, buffer.toString(), keyboard.stopSupportChat());
     }
 
     public SendMessage getSupportMessage(Long replyToMessageForwardFromChatId, String text) {
-        return getSendMessage(replyToMessageForwardFromChatId, text, null);
+        return getSendMessage(replyToMessageForwardFromChatId, text, keyboard.stopSupportChat());
     }
 
     public SendMessage stopSupportChat(Long chatId) {
-        return getSendMessage(chatId, "Чат с поддержкой завершен.", null);
+        return getSendMessage(chatId, "Чат с поддержкой завершен.", keyboard.getAnotherTryToPay());
     }
 
     public SendDocument approvePay(Long chatUserId, File pdf) {
@@ -111,6 +114,7 @@ public class CreateMessage {
         docMsg.setDocument(new InputFile(pdf));
         docMsg.setCaption("Документ готов.\nВы можете его сохранить и распечатать." +
                 "\n\nПо всем вопросам можете обращаться в нашу службу заботы /customercentre");
+        docMsg.setReplyMarkup(keyboard.getAnotherTryToPay());
         return docMsg;
     }
 
@@ -118,6 +122,6 @@ public class CreateMessage {
         buffer.setLength(0);
         buffer.append("Ваш платеж принят, но видмо произошла ошибка формирования чека.")
                 .append("\nНапишите в нашу службу заботы за доподнительной информацией /customercentre");
-        return getSendMessage(chatUserId, buffer.toString(), null);
+        return getSendMessage(chatUserId, buffer.toString(), keyboard.getAnotherTryToPay());
     }
 }

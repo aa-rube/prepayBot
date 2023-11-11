@@ -59,4 +59,34 @@ public class Keyboard {
         inLineKeyBoard.setKeyboard(keyboardMatrix);
         return inLineKeyBoard;
     }
+
+    public InlineKeyboardMarkup stopSupportChat() {
+        InlineKeyboardMarkup inLineKeyBoard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboardMatrix = new ArrayList<>();
+
+        List<InlineKeyboardButton> firstRow = new ArrayList<>();
+        InlineKeyboardButton stpwrd = new InlineKeyboardButton();
+        stpwrd.setText("Завершить чат");
+        stpwrd.setCallbackData("closeChat");
+        firstRow.add(stpwrd);
+
+        keyboardMatrix.add(firstRow);
+        inLineKeyBoard.setKeyboard(keyboardMatrix);
+        return inLineKeyBoard;
+    }
+
+    public InlineKeyboardMarkup getAnotherTryToPay() {
+        InlineKeyboardMarkup inLineKeyBoard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboardMatrix = new ArrayList<>();
+
+        List<InlineKeyboardButton> firstRow = new ArrayList<>();
+        InlineKeyboardButton stpwrd = new InlineKeyboardButton();
+        stpwrd.setText("Внести еще платеж");
+        stpwrd.setCallbackData("payAgain");
+        firstRow.add(stpwrd);
+
+        keyboardMatrix.add(firstRow);
+        inLineKeyBoard.setKeyboard(keyboardMatrix);
+        return inLineKeyBoard;
+    }
 }
