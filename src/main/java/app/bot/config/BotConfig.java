@@ -11,6 +11,18 @@ public class BotConfig {
     private String token;
     @Value("${owner.user.name}")
     private String ownerUserName;
+    @Value("${admins.chat}")
+    private  Long adminsChat;
+    @Value("${support.chat}")
+    private  Long supportChat;
+
+    public Long getSupportChat() {
+        return supportChat;
+    }
+
+    public Long getAdminsChat() {
+        return adminsChat;
+    }
     public String getBotName() {
         return botName;
     }
