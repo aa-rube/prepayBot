@@ -99,8 +99,7 @@ public class Chat extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         Thread thread = new Thread(() -> {
 
-            if (update.hasMessage() && update.getMessage().isReply()
-                    && update.getMessage().getChatId() == botConfig.getSupportChat()) {
+            if (update.hasMessage() && update.getMessage().isReply()) {
                 replayHandle(update);
                 return;
             }

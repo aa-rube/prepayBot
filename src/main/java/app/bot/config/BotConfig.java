@@ -9,8 +9,6 @@ public class BotConfig {
     private String botName;
     @Value("${bot.token}")
     private String token;
-    @Value("${owner.user.name}")
-    private String ownerUserName;
     @Value("${admins.chat}")
     private  Long adminsChat;
     @Value("${support.chat}")
@@ -19,7 +17,6 @@ public class BotConfig {
     public Long getSupportChat() {
         return supportChat;
     }
-
     public Long getAdminsChat() {
         return adminsChat;
     }
@@ -28,8 +25,5 @@ public class BotConfig {
     }
     public String getToken() {
         return token;
-    }
-    public String getOwnerUserName() {
-        return ownerUserName;
     }
 }

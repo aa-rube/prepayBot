@@ -74,7 +74,7 @@ public class CreateMessage {
                     .append("После перевода нажмите кнопку и отправьте скриншот об оплате в этот чат.");
             return getSendMessage(chatId, buffer.toString(), keyboard.iPaidForThis());
         } catch (Exception e) {
-            buffer.append("Вот это да.. Админ еще ни одной карты не добавил. Напишите в поддержку: /support");
+            buffer.append("Вот это да.. Админ еще ни одной карты не добавил. Напишите в поддержку: /customercentre");
             return getSendMessage(chatId, buffer.toString(), null);
         }
     }
