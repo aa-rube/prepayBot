@@ -267,7 +267,6 @@ public class Chat extends TelegramLongPollingBot {
             } else {
                 executeMsg(adminMessage.getExceptionMessage(chatId));
             }
-
         }
     }
 
@@ -332,7 +331,8 @@ public class Chat extends TelegramLongPollingBot {
                     execute(createMessage.approvePay(chatUserId, pdf));//user
                     execute(adminMessage.approvePay(botConfig.getAdminsChat(), pdf));//admin
                 } catch (TelegramApiException e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
+                    //throw new RuntimeException(e);
                 }
             } else {
                 executeMsg(createMessage.fileDidNotSendToUser(chatUserId));

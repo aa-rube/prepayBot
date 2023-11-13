@@ -44,6 +44,7 @@ public class PdfEditor {
             return tempFile;
 
         }catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
