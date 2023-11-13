@@ -17,7 +17,7 @@ public class PdfEditor {
         try {
             String data = LocalDate.now().toString();
             File tempFile = Files.createTempFile("reseipt", ".pdf").toFile();
-            PdfReader reader = new PdfReader("input.pdf");
+            PdfReader reader = new PdfReader("/root/prepayBot/input.pdf");
             PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(tempFile));
             BaseFont font = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
             int pages = reader.getNumberOfPages();
