@@ -11,10 +11,9 @@ import java.util.List;
 public class CardService {
     @Autowired
    private CardDataRepository repository;
-    public boolean save(String number) {
+    public boolean save(Card card) {
         try {
-            Card c = new Card(number);
-            repository.save(c);
+            repository.save(card);
             return true;
         } catch (Exception e) {
             return false;

@@ -3,7 +3,6 @@ package app.bot.enviroment;
 import app.bot.model.Card;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -12,7 +11,6 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,7 +33,7 @@ public class CreateAdminMessage {
 
     public SendMessage getStartMessage(Long chatId) {
         buffer.setLength(0);
-        buffer.append("Бот формирования инвойсв приветствует вас. Ниже кнопки меню для управления");
+        buffer.append("Бот предоплты приветствует вас. Ниже кнопки меню для управления");
         return getSendMessage(chatId, buffer.toString(), keyboard.mainAdminMenu());
     }
 
@@ -46,9 +44,16 @@ public class CreateAdminMessage {
         return getSendMessage(chatId, buffer.toString(), keyboard.getBackMain());
     }
 
-    public SendMessage cardSaved(Long chatId, String text) {
+    public SendMessage inputCardHolderName(Long chatId, String text) {
         buffer.setLength(0);
-        buffer.append("Карта <code>").append(text).append("</code> сохранена. Можно добавить еще");
+        buffer.append("Введите имя держателя карты в формате Иван И.\nКарта ").append("<code>").append(text).append("</code>");
+        return getSendMessage(chatId, buffer.toString(), keyboard.getBackMain());
+    }
+
+    public SendMessage cardSaved(Long chatId, Card card) {
+        buffer.setLength(0);
+        buffer.append("Карта <code>").append(card.getCardNumber()).append("</code>, ").append(card.getName())
+                .append("\nДанные сохранены. Можно добавить еще.");
         return getSendMessage(chatId, buffer.toString(), keyboard.getBackMain());
     }
 
@@ -80,7 +85,7 @@ public class CreateAdminMessage {
     public SendDocument getDocumentMessage(Long adminChatId, Long userChatId, String docId, String textToAdmin) {
         buffer.setLength(0);
         buffer.append("Данные клиента: \n").append(getCutString(textToAdmin)).append("</code>\n\n")
-                .append("Для формирования инвойс проверте поступление денег на указанную карту.\nПосле чего подтвердите платеж");
+                .append("Для формирования чека проверьте поступление денег на указанную карту.\nПосле чего подтвердите платеж");
 
         SendDocument msg = new SendDocument();
         msg.setChatId(adminChatId);
@@ -96,7 +101,7 @@ public class CreateAdminMessage {
 
         buffer.append("Список  добавленных карт: \n");
         for (Card card : cards) {
-            buffer.append("<code>").append(card.getCardNumber()).append("</code>\n")
+            buffer.append("<code>").append(card.getCardNumber()).append("</code>,").append(card.getName()).append("\n")
                     .append("/_").append(card.getId()).append("_deleteCard\n\n");
         }
         return getSendMessage(chatId, buffer.toString(), keyboard.getBackMain());
@@ -114,5 +119,11 @@ public class CreateAdminMessage {
         docMsg.setDocument(new InputFile(pdf));
         docMsg.setCaption("Документ готов и передан плательшику.\nВы можете его сохранить и распечатать.");
         return docMsg;
+    }
+
+    public SendMessage getExceptionMessage(Long chatId) {
+        buffer.setLength(0);
+        buffer.append("Произошла ошибка сохрнения. Нажмите /start и попробуйте еще раз.\nРазаработчик: t.me/i_amallears");
+        return getSendMessage(chatId, buffer.toString(), null);
     }
 }

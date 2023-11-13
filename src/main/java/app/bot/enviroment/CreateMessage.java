@@ -1,5 +1,6 @@
 package app.bot.enviroment;
 
+import app.bot.model.Card;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -65,19 +66,20 @@ public class CreateMessage {
         return getSendMessage(chatId, buffer.toString(), keyboard.sumInRublesIsOk());
     }
 
-    public SendMessage getRandomCard(Long chatId, Map<Long, Integer> sumInRub, Map<Long, String> fullName, List<String> cards) {
+    public SendMessage getRandomCard(Long chatId, Map<Long, Integer> sumInRub, Map<Long, String> fullName, List<Card> cards) {
         buffer.setLength(0);
-        String card = RandomSelector.getRandomString(cards);
+        Card card = RandomSelector.getRandomCard(cards);
 
         if (card != null) {
             buffer.append("ФИО: ").append(fullName.get(chatId)).append("\n")
                     .append("Сумма: ").append(sumInRub.get(chatId)).append(".00RUB\n\n")
-                    .append("Карта для перевода: \n")
-                    .append("<code>").append(card).append("</code>\n\n")
+                    .append("Данные для перевода: \n")
+                    .append("Получатель: ").append(card.getName()).append("\n")
+                    .append("Карта <code>").append(card.getCardNumber()).append("</code>\n\n")
                     .append("После перевода нажмите кнопку и отправьте скриншот об оплате в этот чат.");
             return getSendMessage(chatId, buffer.toString(), keyboard.iPaidForThis());
         } else {
-            buffer.append("Вот это да.. Админ еще ни одной карты не добавил. Напишите в поддержку: /customercentre");
+            buffer.append("Вот это да.. Администратор еще ни одной карты не добавил. Напишите в нашу службу заботы: /customercentre");
             return getSendMessage(chatId, buffer.toString(), keyboard.getAnotherTryToPay());
         }
     }

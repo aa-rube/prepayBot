@@ -26,7 +26,7 @@ public class PdfEditor {
                 cb.beginText();
 
                 cb.setFontAndSize(font, 12);
-                cb.setTextMatrix(85, reader.getPageSize(i).getHeight() - 240);
+                cb.setTextMatrix(85, reader.getPageSize(i).getHeight() - 440);
                 cb.showText(fullName);
 
                 cb.setTextMatrix(480, reader.getPageSize(i).getHeight() - 540);

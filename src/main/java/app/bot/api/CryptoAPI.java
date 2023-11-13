@@ -12,17 +12,17 @@ import java.net.URL;
 @Service
 public class CryptoAPI {
     private final String apiKey ="545872a65b7237d9a9f07a9a87df174240a77e56ccf68f38ffec15f9f70231ce";
-    public double getTHBPrice() {
+    public double getPrice(String from, String to) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.readTree(getResponse()).get("THB").asDouble();
+            return mapper.readTree(getResponse(from, to)).get(to).asDouble();
         } catch (Exception e) {
             return 0.00;
         }
     }
 
-    private String getResponse() throws IOException {
-        String url = "https://min-api.cryptocompare.com/data/price?fsym=RUB&tsyms=THB";
+    private String getResponse(String from, String to) throws IOException {
+        String url = "https://min-api.cryptocompare.com/data/price?fsym=" + from + "&tsyms=" + to;
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();

@@ -22,7 +22,7 @@ public class KeyboardAdmin {
         firstRow.add(add);
 
         InlineKeyboardButton list = new InlineKeyboardButton();
-        list.setText("Список");
+        list.setText("Список карт");
         list.setCallbackData("cardList");
         firstRow.add(list);
 

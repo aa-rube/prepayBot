@@ -7,10 +7,12 @@ import java.math.RoundingMode;
 
 @Service
 public class SuperAccurateCalculator {
-    public int calculate(double amount, double rate) {
-        BigDecimal result = BigDecimal.valueOf(amount / rate);
-        result = result.multiply(BigDecimal.valueOf(1.03));
-        result = result.setScale(0, RoundingMode.CEILING);
-        return result.intValue();
+    public int calculate(double amount, double rubToUsdt, double usdtTOThb) {
+        BigDecimal usdt = BigDecimal.valueOf(amount / usdtTOThb);
+        BigDecimal rub = BigDecimal.valueOf(usdt.doubleValue()/rubToUsdt);
+
+        rub = rub.multiply(BigDecimal.valueOf(1.04));
+        rub = rub.setScale(0, RoundingMode.CEILING);
+        return rub.intValue();
     }
 }

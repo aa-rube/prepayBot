@@ -1,9 +1,11 @@
 package app.bot.enviroment;
 
+import app.bot.model.Card;
+
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 public class RandomSelector {
-    public static String getRandomString(List<String> list) {
+    public static Card getRandomCard(List<Card> list) {
         int size = list.size();
         if (size == 0) {
             return null;
