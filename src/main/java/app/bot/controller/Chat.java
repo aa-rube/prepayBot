@@ -180,7 +180,7 @@ public class Chat extends TelegramLongPollingBot {
             return;
         }
 
-        if (command.contains("_deleteCard@bereza_property_prepay_bot") && chatId.equals(adminsChat)) {
+        if (command.contains("_deleteCard") && chatId.equals(adminsChat)) {
             int id = Integer.parseInt(command.split("_")[1]);
             if (cardService.deleteById(id)) {
                 init();
