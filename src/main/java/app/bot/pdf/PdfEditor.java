@@ -8,35 +8,35 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.time.LocalDate;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class PdfEditor {
 
     public static File addTextToPdf(String fullName, String sum) {
         try {
-            String data = LocalDate.now().toString();
             File tempFile = Files.createTempFile("receipt", ".pdf").toFile();
-            PdfReader reader = new PdfReader("/root/prepayBot/input.pdf");
+            //PdfReader reader = new PdfReader("/root/prepayBot/input.pdf");
+            PdfReader reader = new PdfReader("input.pdf");
             PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(tempFile));
             BaseFont font = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+
             int pages = reader.getNumberOfPages();
             for (int i = 1; i <= pages; i++) {
                 PdfContentByte cb = stamper.getOverContent(i);
                 cb.beginText();
 
                 cb.setFontAndSize(font, 12);
-                cb.setTextMatrix(85, reader.getPageSize(i).getHeight() - 440);
+                cb.setTextMatrix(85, reader.getPageSize(i).getHeight() - 330);
                 cb.showText(fullName);
 
-                cb.setTextMatrix(480, reader.getPageSize(i).getHeight() - 540);
+                cb.setTextMatrix(490, reader.getPageSize(i).getHeight() - 330);
                 cb.showText(sum);
 
-                cb.setTextMatrix(480, reader.getPageSize(i).getHeight() - 664);
-                cb.showText(sum);
+                cb.setTextMatrix(450, reader.getPageSize(i).getHeight() - 260);
+                cb.showText(bangkokTime());
 
-                cb.setTextMatrix(450, reader.getPageSize(i).getHeight() - 380);
-                cb.showText(data);
                 cb.endText();
             }
             stamper.close();
@@ -48,4 +48,12 @@ public class PdfEditor {
             return null;
         }
     }
+
+        private static String bangkokTime() {
+            Instant utcInstant = Instant.now();
+            ZoneId bangkokZone = ZoneId.of("Asia/Bangkok");
+            ZonedDateTime bangkokTime = ZonedDateTime.ofInstant(utcInstant, bangkokZone);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            return bangkokTime.format(formatter);
+        }
 }

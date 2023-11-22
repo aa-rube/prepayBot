@@ -79,7 +79,7 @@ public class CreateMessage {
                     .append("После перевода нажмите кнопку и отправьте скриншот об оплате в этот чат.");
             return getSendMessage(chatId, buffer.toString(), keyboard.iPaidForThis());
         } else {
-            buffer.append("Вот это да.. Администратор еще ни одной карты не добавил. Напишите в нашу службу заботы: /customercentre");
+            buffer.append("Вот это да.. Администратор еще ни одной карты не добавил. Напишите в нашу службу заботы: \n/customercentre");
             return getSendMessage(chatId, buffer.toString(), keyboard.getAnotherTryToPay());
         }
     }
