@@ -17,8 +17,8 @@ public class PdfEditor {
     public static File addTextToPdf(String fullName, String sum) {
         try {
             File tempFile = Files.createTempFile("receipt", ".pdf").toFile();
-            //PdfReader reader = new PdfReader("/root/prepayBot/input.pdf");
-            PdfReader reader = new PdfReader("input.pdf");
+            PdfReader reader = new PdfReader("/root/prepayBot/input.pdf");
+            //PdfReader reader = new PdfReader("input.pdf");
             PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(tempFile));
             BaseFont font = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
 
