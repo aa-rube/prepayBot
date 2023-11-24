@@ -9,14 +9,19 @@ public class CreateButtonsData {
     public static Map<String, Project> getAllButtonsData() {
 
         Project project = new Project();
-        project.setButton("Аренда номера");
-        project.setStringReceipt("Booking Apartmen");
+        project.setButton("Оплата бронирования");
+        project.setStringReceipt("Booking Apartment");
         buttons.put("first", project);
 
         Project project1 = new Project();
-        project1.setButton("Аренда самокатов");
-        project1.setStringReceipt("Scooter Rental");
+        project1.setButton("Оплата трансфера");
+        project1.setStringReceipt("Payment for transfer");
         buttons.put("second", project1);
+
+        Project project2 = new Project();
+        project2.setButton("Оплата экскурсии");
+        project2.setStringReceipt("Payment for excursion");
+        buttons.put("third", project2);
 
 //        Project project2 = new Project();
 //        project2.setButton();
