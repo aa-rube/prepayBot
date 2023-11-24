@@ -1,12 +1,9 @@
 package app.bot.pdf;
 
-import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import org.springframework.stereotype.Service;
-
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -14,11 +11,11 @@ import java.time.format.DateTimeFormatter;
 @Service
 public class PdfEditor {
 
-    public static File addTextToPdf(String fullName, String sum) {
+    public static File addTextToPdf(String fullName, String sum, String direction) {
         try {
             File tempFile = Files.createTempFile("receipt", ".pdf").toFile();
-            PdfReader reader = new PdfReader("/root/prepayBot/input.pdf");
-            //PdfReader reader = new PdfReader("input.pdf");
+            //PdfReader reader = new PdfReader("/root/prepayBot/input_new.pdf");
+            PdfReader reader = new PdfReader("input_new.pdf");
             PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(tempFile));
             BaseFont font = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
 
@@ -26,8 +23,8 @@ public class PdfEditor {
             for (int i = 1; i <= pages; i++) {
                 PdfContentByte cb = stamper.getOverContent(i);
                 cb.beginText();
-
                 cb.setFontAndSize(font, 12);
+
                 cb.setTextMatrix(85, reader.getPageSize(i).getHeight() - 330);
                 cb.showText(fullName);
 
@@ -37,23 +34,26 @@ public class PdfEditor {
                 cb.setTextMatrix(450, reader.getPageSize(i).getHeight() - 260);
                 cb.showText(bangkokTime());
 
-                cb.endText();
+                cb.setTextMatrix(55, reader.getPageSize(i).getHeight() - 260);
+                cb.showText(direction);
+
+
             }
             stamper.close();
             reader.close();
             return tempFile;
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-        private static String bangkokTime() {
-            Instant utcInstant = Instant.now();
-            ZoneId bangkokZone = ZoneId.of("Asia/Bangkok");
-            ZonedDateTime bangkokTime = ZonedDateTime.ofInstant(utcInstant, bangkokZone);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            return bangkokTime.format(formatter);
-        }
+    private static String bangkokTime() {
+        Instant utcInstant = Instant.now();
+        ZoneId bangkokZone = ZoneId.of("Asia/Bangkok");
+        ZonedDateTime bangkokTime = ZonedDateTime.ofInstant(utcInstant, bangkokZone);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return bangkokTime.format(formatter);
+    }
 }

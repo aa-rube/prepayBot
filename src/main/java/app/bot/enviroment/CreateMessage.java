@@ -12,6 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,22 +34,32 @@ public class CreateMessage {
         return msg;
     }
 
-    public SendMessage getStartMessage(Long chatId) {
+    public SendMessage getStartMessage(Long chatId, Map<String, String> buttons) {
         buffer.setLength(0);
-        buffer.append("Приветствую! \nВведите ваши ФИО");
+        buffer.append("Приветствую! \nВыберите проект, по которому желаете внести предоплату");
+
+        return getSendMessage(chatId, buffer.toString(), keyboard.chooseThePayOption(buttons));
+    }
+    public SendMessage startEnterFullName(Long chatId) {
+        buffer.setLength(0);
+        buffer.append("Введите пожалуйста ваши ФИО:");
+
         return getSendMessage(chatId, buffer.toString(), null);
     }
+
 
     public SendMessage allRightNext(Long chatId, String fullName) {
         buffer.setLength(0);
         buffer.append("Если заметили ошибку то введите ФИО еще раз.\nПроверьте данные:\n")
                 .append(fullName);
+
         return getSendMessage(chatId, buffer.toString(), keyboard.fullNameIsOk());
     }
 
     public SendMessage wrongInput(Long chatId) {
         buffer.setLength(0);
         buffer.append("Вы ввели что-то другое. Попробуйте снова");
+
         return getSendMessage(chatId, buffer.toString(), null);
     }
 
@@ -66,13 +77,13 @@ public class CreateMessage {
         return getSendMessage(chatId, buffer.toString(), keyboard.sumInRublesIsOk());
     }
 
-    public SendMessage getRandomCard(Long chatId, Map<Long, Integer> sumInRub, Map<Long, String> fullName, List<Card> cards) {
+    public SendMessage getRandomCard(Long chatId, int sumInRub, String fullName, List<Card> cards) {
         buffer.setLength(0);
         Card card = RandomSelector.getRandomCard(cards);
 
         if (card != null) {
-            buffer.append("ФИО: ").append(fullName.get(chatId)).append("\n")
-                    .append("Сумма: ").append(sumInRub.get(chatId)).append(".00RUB\n\n")
+            buffer.append("ФИО: ").append(fullName).append("\n")
+                    .append("Сумма: ").append(sumInRub).append(".00RUB\n\n")
                     .append("Данные для перевода: \n")
                     .append("Получатель: ").append(card.getName()).append("\n")
                     .append("Карта <code>").append(card.getCardNumber()).append("</code>\n\n")

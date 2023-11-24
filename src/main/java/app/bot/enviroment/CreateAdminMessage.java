@@ -28,25 +28,29 @@ public class CreateAdminMessage {
         msg.setReplyMarkup(markup);
         msg.enableHtml(true);
         msg.setParseMode(ParseMode.HTML);
+
         return msg;
     }
 
     public SendMessage getStartMessage(Long chatId) {
         buffer.setLength(0);
         buffer.append("Бот предоплты приветствует вас. Ниже кнопки меню для управления");
+
         return getSendMessage(chatId, buffer.toString(), keyboard.mainAdminMenu());
     }
 
     public SendMessage addNewCard(Long chatId) {
         buffer.setLength(0);
-
         buffer.append("Введите новый номер карты(16 знаков без пробелов) Номера могут быть не уникальными.");
+
         return getSendMessage(chatId, buffer.toString(), keyboard.getBackMain());
     }
 
     public SendMessage inputCardHolderName(Long chatId, String text) {
         buffer.setLength(0);
-        buffer.append("Введите имя держателя карты в формате Иван И.\nКарта ").append("<code>").append(text).append("</code>");
+        buffer.append("Введите имя держателя карты в формате Иван И.\nКарта ")
+                .append("<code>").append(text).append("</code>");
+
         return getSendMessage(chatId, buffer.toString(), keyboard.getBackMain());
     }
 
@@ -54,17 +58,20 @@ public class CreateAdminMessage {
         buffer.setLength(0);
         buffer.append("Карта <code>").append(card.getCardNumber()).append("</code>, ").append(card.getName())
                 .append("\nДанные сохранены. Можно добавить еще.");
+
         return getSendMessage(chatId, buffer.toString(), keyboard.getBackMain());
     }
 
     private String getCutString(String input) {
-        String regex = "\\d{16}";
-        Pattern pattern = Pattern.compile(regex);
+        Pattern pattern = Pattern.compile("\\d{16}");
         Matcher matcher = pattern.matcher(input);
+
         if (matcher.find()) {
             String cardNumber = matcher.group();
+
             return input.substring(0, input.indexOf(cardNumber) + cardNumber.length());
         }
+
         return "";
     }
 
@@ -79,6 +86,7 @@ public class CreateAdminMessage {
         msg.setCaption(buffer.toString());
         msg.setParseMode(ParseMode.HTML);
         msg.setReplyMarkup(keyboard.approveOrNot(userChatId));
+
         return msg;
     }
 
@@ -93,23 +101,25 @@ public class CreateAdminMessage {
         msg.setCaption(buffer.toString());
         msg.setParseMode(ParseMode.HTML);
         msg.setReplyMarkup(keyboard.approveOrNot(userChatId));
+
         return msg;
     }
 
     public SendMessage getListOfCard(Long chatId, List<Card> cards) {
         buffer.setLength(0);
-
         buffer.append("Список  добавленных карт: \n");
         for (Card card : cards) {
             buffer.append("<code>").append(card.getCardNumber()).append("</code>,").append(card.getName()).append("\n")
                     .append("/_").append(card.getId()).append("_deleteCard\n\n");
         }
+
         return getSendMessage(chatId, buffer.toString(), keyboard.getBackMain());
     }
 
     public SendMessage cancelPay(Long chatId, String username) {
         buffer.setLength(0);
         buffer.append("Платеж отменен. Контакт пользователя: @").append(username);
+
         return getSendMessage(chatId, buffer.toString(), null);
     }
 
@@ -118,12 +128,14 @@ public class CreateAdminMessage {
         docMsg.setChatId(adminChatId);
         docMsg.setDocument(new InputFile(pdf));
         docMsg.setCaption("Документ готов и передан плательшику.\nВы можете его сохранить и распечатать.");
+
         return docMsg;
     }
 
     public SendMessage getExceptionMessage(Long chatId) {
         buffer.setLength(0);
         buffer.append("Произошла ошибка сохрнения. Нажмите /start и попробуйте еще раз.\nРазаработчик: t.me/i_amallears");
+
         return getSendMessage(chatId, buffer.toString(), null);
     }
 }

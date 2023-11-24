@@ -5,13 +5,16 @@ import app.bot.enviroment.*;
 import app.bot.config.BotConfig;
 import app.bot.model.Card;
 import app.bot.model.Rate;
+import app.bot.model.ReceiptData;
 import app.bot.pdf.PdfEditor;
 import app.bot.service.CardService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ForwardMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -42,17 +45,16 @@ public class Chat extends TelegramLongPollingBot {
     @Autowired
     private CardService cardService;
     private final Map<Long, Integer> chatIdMsgId = Collections.synchronizedMap(new HashMap<>());
-    private final Set<Long> startEnterName = Collections.synchronizedSet(new HashSet<>());
-    private final Map<Long, String> fullName = Collections.synchronizedMap(new HashMap<>());
-    private final Set<Long> startEnterSum = Collections.synchronizedSet(new HashSet<>());
-    private final Map<Long, Integer> sumInRub = Collections.synchronizedMap(new HashMap<>());
     private List<Card> cards = new ArrayList<>();
     private final Set<Long> startEnterCardData = Collections.synchronizedSet(new HashSet<>());
     private final Map<Long, Card> cardData = Collections.synchronizedMap(new HashMap<>());
-    private final Map<Long, String> textToAdmin = Collections.synchronizedMap(new HashMap<>());
+
     private final Set<Long> waitForPayScreenShot = Collections.synchronizedSet(new HashSet<>());
     private final Map<Long, LocalDateTime> chattingWithAdmin = Collections.synchronizedMap(new HashMap<>());
-    private final Map<Long, String> userName = Collections.synchronizedMap(new HashMap<>());
+
+    private final Map<String, String> buttons = ButtonsData.getAllButtonsData();
+    private final Map<Long, ReceiptData> userData = Collections.synchronizedMap(new LinkedHashMap<>());
+
     @Override
     public String getBotUsername() {
         return botConfig.getBotName();
@@ -68,12 +70,14 @@ public class Chat extends TelegramLongPollingBot {
         updateCurrencyRate();
         updateCardList();
     }
+
     private void updateCurrencyRate() {
         rate.setRubToUSDT(compareAPI.getPrice("RUB", "USDT"));
         rate.setUsdtToTHB(compareAPI.getPrice("USDT", "THB"));
 
         rate.setLastUpdate(LocalDateTime.now());
     }
+
     private void updateCardList() {
         cards = cardService.findAllCards();
     }
@@ -145,18 +149,20 @@ public class Chat extends TelegramLongPollingBot {
             if (message.hasPhoto() && waitForPayScreenShot.contains(chatId)) {
                 waitForPayScreenShot.remove(chatId);
                 String photoId = message.getPhoto().get(0).getFileId();
+
                 chatIdMsgId.put(adminsChat,
                         execute(adminMessage.getPhotoMessage(adminsChat,
-                                chatId, photoId, textToAdmin.get(chatId))).getMessageId());
+                                chatId, photoId, userData.get(chatId).getTextToAdmin())) .getMessageId());
                 return;
             }
 
             if (message.hasDocument() && waitForPayScreenShot.contains(chatId)) {
                 waitForPayScreenShot.remove(chatId);
                 String docId = message.getDocument().getFileId();
+
                 chatIdMsgId.put(adminsChat,
                         execute(adminMessage.getDocumentMessage(adminsChat,
-                                chatId, docId, textToAdmin.get(chatId))).getMessageId());
+                                chatId, docId, userData.get(chatId).getTextToAdmin())).getMessageId());
                 return;
 
             }
@@ -167,6 +173,7 @@ public class Chat extends TelegramLongPollingBot {
 
     private void commandHandle(Update update, Long chatId, String command) {
         Long adminsChat = botConfig.getAdminsChat();
+
         if (command.equals("/start")) {
             if (chatId.equals(adminsChat)) {
                 executeMsg(adminMessage.getStartMessage(adminsChat));
@@ -174,9 +181,10 @@ public class Chat extends TelegramLongPollingBot {
                 cardData.remove(chatId);
                 return;
             }
-            startEnterName.add(chatId);
-            userName.put(chatId, update.getMessage().getFrom().getUserName());
-            executeMsg(createMessage.getStartMessage(chatId));
+
+            userData.put(chatId, new ReceiptData());
+            userData.get(chatId).setUserName(update.getMessage().getFrom().getUserName());
+            executeMsg(createMessage.getStartMessage(chatId, buttons));
             return;
         }
 
@@ -211,19 +219,19 @@ public class Chat extends TelegramLongPollingBot {
             return;
         }
 
-        if (startEnterName.contains(chatId)) {
+        if (userData.get(chatId).isStartEnterName()) {
             if (text.split(" ").length > 1) {
-                String transitFullName = transliterator.transliterate(text.trim().toUpperCase());
-                fullName.put(chatId, transitFullName);
-
-                executeMsg(createMessage.allRightNext(chatId, transitFullName));
+                userData.get(chatId).setStartEnterName(false);
+                userData.get(chatId).setFullName(transliterator.transliterate(text.trim().toUpperCase()));
+                executeMsg(createMessage.allRightNext(chatId, userData.get(chatId).getFullName()));
             } else {
                 executeMsg(createMessage.wrongInput(chatId));
             }
             return;
         }
 
-        if (startEnterSum.contains(chatId)) {
+        if (userData.get(chatId).isStartEnterSum()) {
+
             try {
                 double thb = Double.parseDouble(text);
 
@@ -235,7 +243,7 @@ public class Chat extends TelegramLongPollingBot {
                 }
 
                 int rub = calculator.calculate(thb, rate.getRubToUSDT(), rate.getUsdtToTHB());
-                sumInRub.put(chatId, rub);
+                userData.get(chatId).setSumInRub(rub);
                 executeMsg(createMessage.checkTheRubSum(chatId, rub));
             } catch (Exception e) {
                 executeMsg(createMessage.wrongInput(chatId));
@@ -245,6 +253,7 @@ public class Chat extends TelegramLongPollingBot {
 
         if (startEnterCardData.contains(chatId)) {
             if (text.trim().length() == 16) {
+
                 startEnterCardData.remove(chatId);
                 Card card = new Card();
                 card.setCardNumber(text.trim());
@@ -271,22 +280,26 @@ public class Chat extends TelegramLongPollingBot {
     }
 
     private void callBackDataHandler(Update update, Long chatId, String data) {
+        System.out.println(data);
+
         try {
             deleteKeyboard(chatId);
         } catch (Exception e) {
         }
 
         if (data.equals("next")) {
-            startEnterName.remove(chatId);
-            startEnterSum.add(chatId);
+            userData.get(chatId).setStartEnterSum(true);
             executeMsg(createMessage.inputYourSum(chatId));
             return;
         }
 
         if (data.equals("next1")) {
-            startEnterSum.remove(chatId);
-            SendMessage msg = createMessage.getRandomCard(chatId, sumInRub, fullName, cards);
-            textToAdmin.put(chatId, msg.getText());
+            userData.get(chatId).setStartEnterSum(false);
+
+            SendMessage msg = createMessage.getRandomCard(chatId, userData.get(chatId).getSumInRub(),
+                    userData.get(chatId).getFullName(), cards);
+
+            userData.get(chatId).setTextToAdmin(msg.getText());
             executeMsg(msg);
             return;
         }
@@ -298,9 +311,8 @@ public class Chat extends TelegramLongPollingBot {
         }
 
         if (data.equals("cancel")) {
-            startEnterSum.remove(chatId);
-            executeMsg(createMessage.getStartMessage(chatId));
-            startEnterName.add(chatId);
+            userData.get(chatId).setStartEnterSum(false);
+            executeMsg(createMessage.getStartMessage(chatId, buttons));
             return;
         }
 
@@ -323,17 +335,19 @@ public class Chat extends TelegramLongPollingBot {
 
         if (data.contains("ok_") && chatId.equals(botConfig.getAdminsChat())) {
             Long chatUserId = Long.valueOf(data.split("_")[1]);
-            userName.remove(chatUserId);
-            File pdf = PdfEditor.addTextToPdf(fullName.get(chatUserId), sumInRub.get(chatUserId).toString());
-            if (pdf != null) {
 
+            File pdf = PdfEditor.addTextToPdf(userData.get(chatUserId).getFullName(),
+                    String.valueOf(userData.get(chatUserId).getSumInRub()),
+                    userData.get(chatUserId).getPayDirection());
+
+            if (pdf != null) {
                 try {
                     execute(createMessage.approvePay(chatUserId, pdf));//user
                     execute(adminMessage.approvePay(botConfig.getAdminsChat(), pdf));//admin
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
-                    //throw new RuntimeException(e);
                 }
+
             } else {
                 executeMsg(createMessage.fileDidNotSendToUser(chatUserId));
             }
@@ -344,7 +358,7 @@ public class Chat extends TelegramLongPollingBot {
             Long chatUserId = Long.valueOf(data.split("_")[1]);
 
             executeMsg(createMessage.cancelPay(chatUserId));
-            executeMsg(adminMessage.cancelPay(botConfig.getAdminsChat(), userName.get(chatUserId)));
+            executeMsg(adminMessage.cancelPay(botConfig.getAdminsChat(), userData.get(chatUserId).getUserName()));
         }
 
         if (data.equals("closeChat")) {
@@ -353,11 +367,17 @@ public class Chat extends TelegramLongPollingBot {
         }
 
         if (data.equals("payAgain")) {
-            startEnterSum.remove(chatId);
-            sumInRub.remove(chatId);
-            startEnterName.add(chatId);
-            userName.put(chatId, update.getCallbackQuery().getMessage().getFrom().getUserName());
-            executeMsg(createMessage.getStartMessage(chatId));
+            userData.remove(chatId);
+
+            userData.put(chatId, new ReceiptData());
+            userData.get(chatId).setUserName(update.getCallbackQuery().getMessage().getFrom().getUserName());
+            executeMsg(createMessage.getStartMessage(chatId, buttons));
+        }
+
+        if (buttons.containsKey(data)) {
+            userData.get(chatId).setProject(buttons.get(data));
+            userData.get(chatId).setStartEnterName(true);
+            executeMsg(createMessage.startEnterFullName(chatId));
         }
     }
 

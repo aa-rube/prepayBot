@@ -5,7 +5,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class Keyboard {
@@ -86,6 +88,23 @@ public class Keyboard {
         firstRow.add(stpwrd);
 
         keyboardMatrix.add(firstRow);
+        inLineKeyBoard.setKeyboard(keyboardMatrix);
+        return inLineKeyBoard;
+    }
+
+    public InlineKeyboardMarkup chooseThePayOption(Map<String, String> buttons) {
+        InlineKeyboardMarkup inLineKeyBoard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboardMatrix = new ArrayList<>();
+
+        buttons.forEach((key, value) -> {
+            List<InlineKeyboardButton> firstRow = new ArrayList<>();
+            InlineKeyboardButton first = new InlineKeyboardButton();
+            first.setText(value);
+            first.setCallbackData(key);
+            firstRow.add(first);
+            keyboardMatrix.add(firstRow);
+        });
+
         inLineKeyBoard.setKeyboard(keyboardMatrix);
         return inLineKeyBoard;
     }
