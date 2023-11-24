@@ -43,7 +43,7 @@ public class Chat extends TelegramLongPollingBot {
     private final Map<Long, Card> cardData = Collections.synchronizedMap(new HashMap<>());
     private final Set<Long> waitForPayScreenShot = Collections.synchronizedSet(new HashSet<>());
     private final Map<Long, LocalDateTime> chattingWithAdmin = Collections.synchronizedMap(new HashMap<>());
-    private final Map<String, Project> buttons = ButtonsData.getAllButtonsData();
+    private final Map<String, Project> buttons = CreateButtonsData.getAllButtonsData();
     private final Map<Long, ReceiptData> userData = Collections.synchronizedMap(new LinkedHashMap<>());
     @Override
     public String getBotUsername() {

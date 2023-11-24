@@ -1,11 +1,10 @@
 package app.bot.enviroment;
 import app.bot.model.Project;
-import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-public class ButtonsData {
+public class CreateButtonsData {
     private static final Map<String, Project> buttons = Collections.synchronizedMap(new HashMap<>());
     public static Map<String, Project> getAllButtonsData() {
 
