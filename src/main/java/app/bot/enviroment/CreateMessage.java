@@ -1,6 +1,8 @@
 package app.bot.enviroment;
 
 import app.bot.model.Card;
+import app.bot.model.Project;
+import app.bot.model.ReceiptData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -34,7 +36,7 @@ public class CreateMessage {
         return msg;
     }
 
-    public SendMessage getStartMessage(Long chatId, Map<String, String> buttons) {
+    public SendMessage getStartMessage(Long chatId, Map<String, Project> buttons) {
         buffer.setLength(0);
         buffer.append("Приветствую! \nВыберите проект, по которому желаете внести предоплату");
 
@@ -77,13 +79,14 @@ public class CreateMessage {
         return getSendMessage(chatId, buffer.toString(), keyboard.sumInRublesIsOk());
     }
 
-    public SendMessage getRandomCard(Long chatId, int sumInRub, String fullName, List<Card> cards) {
+    public SendMessage getRandomCard(Long chatId, ReceiptData receipt, List<Card> cards) {
         buffer.setLength(0);
         Card card = RandomSelector.getRandomCard(cards);
 
         if (card != null) {
-            buffer.append("ФИО: ").append(fullName).append("\n")
-                    .append("Сумма: ").append(sumInRub).append(".00RUB\n\n")
+            buffer.append("ФИО: ").append(receipt.getFullName()).append("\n")
+                    .append("Проект: ").append(receipt.getProject().getStringReceipt()).append("\n")
+                    .append("Сумма: ").append(receipt.getSumInRub()).append(".00RUB\n\n")
                     .append("Данные для перевода: \n")
                     .append("Получатель: ").append(card.getName()).append("\n")
                     .append("Карта <code>").append(card.getCardNumber()).append("</code>\n\n")

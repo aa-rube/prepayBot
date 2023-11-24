@@ -1,21 +1,20 @@
 package app.bot.pdf;
 
+import app.bot.model.Project;
 import com.itextpdf.text.pdf.*;
-import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-
-@Service
 public class PdfEditor {
 
-    public static File addTextToPdf(String fullName, String sum, String direction) {
+    public static File addTextToPdf(String fullName, String sum, Project project) {
+
         try {
             File tempFile = Files.createTempFile("receipt", ".pdf").toFile();
-            //PdfReader reader = new PdfReader("/root/prepayBot/input_new.pdf");
-            PdfReader reader = new PdfReader("input_new.pdf");
+            PdfReader reader = new PdfReader("/root/prepayBot/input_new.pdf");
+            //PdfReader reader = new PdfReader("input_new.pdf");
             PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(tempFile));
             BaseFont font = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
 
@@ -35,9 +34,9 @@ public class PdfEditor {
                 cb.showText(bangkokTime());
 
                 cb.setTextMatrix(55, reader.getPageSize(i).getHeight() - 260);
-                cb.showText(direction);
+                cb.showText(project.getStringReceipt());
 
-
+                cb.endText();
             }
             stamper.close();
             reader.close();

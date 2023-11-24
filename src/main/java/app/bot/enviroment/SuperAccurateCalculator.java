@@ -7,7 +7,7 @@ import java.math.RoundingMode;
 
 @Service
 public class SuperAccurateCalculator {
-    public int calculate(double amount, double rubToUsdt, double usdtTOThb) {
+    public static int calculate(double amount, double rubToUsdt, double usdtTOThb) {
         BigDecimal usdt = BigDecimal.valueOf(amount / usdtTOThb);
         BigDecimal rub = BigDecimal.valueOf(usdt.doubleValue()/rubToUsdt);
 

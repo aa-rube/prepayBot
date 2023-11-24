@@ -7,7 +7,7 @@ import java.util.Map;
 
 @Service
 public class Transliterator {
-        private final Map<Character, String> translitMap = Collections.synchronizedMap(new HashMap<>(){{
+        private static final Map<Character, String> translitMap = Collections.synchronizedMap(new HashMap<>(){{
         put('А', "A");
         put('Б', "B");
         put('В', "V");
@@ -76,7 +76,7 @@ public class Transliterator {
         put('я', "ya");
     }});
 
-    public synchronized String transliterate(String input) {
+    public static synchronized String transliterate(String input) {
         StringBuilder output = new StringBuilder();
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);

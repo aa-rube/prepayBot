@@ -4,13 +4,21 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 public class ReceiptData {
     private String userName;
-    private String payDirection;
     private int sumInRub;
     private int sumInBth;
     private String fullName;
     private String textToAdmin;
     private boolean startEnterSum;
     private boolean startEnterName;
+    private Project project;
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
 
     public String getUserName() {
         return userName;
@@ -36,28 +44,12 @@ public class ReceiptData {
         this.startEnterSum = startEnterSum;
     }
 
-    public String getPayDirection() {
-        return payDirection;
-    }
-
-    public void setPayDirection(String payDirection) {
-        this.payDirection = payDirection;
-    }
-
     public String getTextToAdmin() {
         return textToAdmin;
     }
 
     public void setTextToAdmin(String textToAdmin) {
         this.textToAdmin = textToAdmin;
-    }
-
-    public String getProject() {
-        return payDirection;
-    }
-
-    public void setProject(String project) {
-        this.payDirection = project;
     }
 
     public int getSumInRub() {

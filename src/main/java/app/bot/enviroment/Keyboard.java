@@ -1,5 +1,6 @@
 package app.bot.enviroment;
 
+import app.bot.model.Project;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -92,14 +93,14 @@ public class Keyboard {
         return inLineKeyBoard;
     }
 
-    public InlineKeyboardMarkup chooseThePayOption(Map<String, String> buttons) {
+    public InlineKeyboardMarkup chooseThePayOption(Map<String, Project> buttons) {
         InlineKeyboardMarkup inLineKeyBoard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboardMatrix = new ArrayList<>();
 
         buttons.forEach((key, value) -> {
             List<InlineKeyboardButton> firstRow = new ArrayList<>();
             InlineKeyboardButton first = new InlineKeyboardButton();
-            first.setText(value);
+            first.setText(value.getButton());
             first.setCallbackData(key);
             firstRow.add(first);
             keyboardMatrix.add(firstRow);
