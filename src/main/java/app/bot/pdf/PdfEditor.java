@@ -13,10 +13,15 @@ import java.time.format.DateTimeFormatter;
 public class PdfEditor {
 
     public static File addTextToPdf(String fullName, String sum, Project project) {
-
         try {
             File tempFile = Files.createTempFile("receipt", ".pdf").toFile();
-            PdfReader reader = new PdfReader("/root/prepayBot/input_new.pdf");
+            PdfReader reader = null;
+
+            try {
+                reader = new PdfReader("/root/prepayBot/input_new.pdf");
+            } catch (Exception e) {
+                reader = new PdfReader("input_new.pdf");
+            }
             PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(tempFile));
             BaseFont font = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
 
@@ -43,42 +48,9 @@ public class PdfEditor {
             stamper.close();
             reader.close();
             return tempFile;
-
-        } catch (Exception e) {
-
-            File tempFile = null;
-            try {
-                tempFile = Files.createTempFile("receipt", ".pdf").toFile();
-                PdfReader reader = new PdfReader("input_new.pdf");
-                PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(tempFile));
-                BaseFont font = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
-
-                int pages = reader.getNumberOfPages();
-                for (int i = 1; i <= pages; i++) {
-                    PdfContentByte cb = stamper.getOverContent(i);
-                    cb.beginText();
-                    cb.setFontAndSize(font, 12);
-
-                    cb.setTextMatrix(85, reader.getPageSize(i).getHeight() - 330);
-                    cb.showText(fullName);
-
-                    cb.setTextMatrix(490, reader.getPageSize(i).getHeight() - 330);
-                    cb.showText(sum);
-
-                    cb.setTextMatrix(450, reader.getPageSize(i).getHeight() - 260);
-                    cb.showText(bangkokTime());
-
-                    cb.setTextMatrix(55, reader.getPageSize(i).getHeight() - 260);
-                    cb.showText(project.getStringReceipt());
-
-                    cb.endText();
-                }
-                stamper.close();
-                reader.close();
-                return tempFile;
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
+            
+        } catch (Exception ex) {
+            return null;
         }
     }
 
