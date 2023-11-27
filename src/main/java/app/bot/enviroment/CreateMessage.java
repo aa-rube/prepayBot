@@ -14,10 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -36,7 +33,7 @@ public class CreateMessage {
         return msg;
     }
 
-    public SendMessage getStartMessage(Long chatId, Map<String, Project> buttons) {
+    public SendMessage getStartMessage(Long chatId, LinkedHashMap<String, Project> buttons) {
         buffer.setLength(0);
         buffer.append("Приветствую! \nВыберите проект, по которому желаете внести предоплату");
 

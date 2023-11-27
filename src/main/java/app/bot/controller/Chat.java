@@ -43,7 +43,7 @@ public class Chat extends TelegramLongPollingBot {
     private final Map<Long, Card> cardData = Collections.synchronizedMap(new HashMap<>());
     private final Set<Long> waitForPayScreenShot = Collections.synchronizedSet(new HashSet<>());
     private final Map<Long, LocalDateTime> chattingWithAdmin = Collections.synchronizedMap(new HashMap<>());
-    private final Map<String, Project> buttons = CreateButtonsData.getAllButtonsData();
+    private final LinkedHashMap<String, Project> buttons = CreateButtonsData.getAllButtonsData();
     private final Map<Long, ReceiptData> userData = Collections.synchronizedMap(new LinkedHashMap<>());
     @Override
     public String getBotUsername() {
@@ -121,8 +121,10 @@ public class Chat extends TelegramLongPollingBot {
         thread.start();
     }
     private synchronized void replayHandle(Update update) {
-        Long replyToMessageForwardFromChatId = update.getMessage().getReplyToMessage().getForwardFrom().getId();
-        executeMsg(createMessage.getSupportMessage(replyToMessageForwardFromChatId, update.getMessage().getText()));
+        try {
+            Long replyToMessageForwardFromChatId = update.getMessage().getReplyToMessage().getForwardFrom().getId();
+            executeMsg(createMessage.getSupportMessage(replyToMessageForwardFromChatId, update.getMessage().getText()));
+        } catch (Exception ignored) {}
     }
     private void screenShotHandler(Message message, Long chatId) {
         Long adminsChat = botConfig.getAdminsChat();
