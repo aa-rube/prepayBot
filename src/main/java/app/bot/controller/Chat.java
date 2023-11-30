@@ -145,9 +145,9 @@ public class Chat extends TelegramLongPollingBot {
     }
 
     private synchronized void screenShotHandler(Message message, Long chatId) {
-        Long adminsChat = botConfig.getAdminsChat();
         try {
             int msgId = 0;
+            Long adminsChat = botConfig.getAdminsChat();
 
             if (message.hasPhoto() && waitForPayScreenShot.contains(chatId)) {
                 waitForPayScreenShot.remove(chatId);
