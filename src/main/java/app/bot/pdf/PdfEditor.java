@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 
 public class PdfEditor {
 
-    public static File addTextToPdf(String fullName, String sum, Project project) {
+    public static File addTextToPdf(String fullName, String sum, String project) {
         try {
             File tempFile = Files.createTempFile("receipt", ".pdf").toFile();
             PdfReader reader = null;
@@ -22,6 +22,7 @@ public class PdfEditor {
             } catch (Exception e) {
                 reader = new PdfReader("input_new.pdf");
             }
+
             PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(tempFile));
             BaseFont font = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
 
@@ -41,7 +42,7 @@ public class PdfEditor {
                 cb.showText(bangkokTime());
 
                 cb.setTextMatrix(55, reader.getPageSize(i).getHeight() - 260);
-                cb.showText(project.getStringReceipt());
+                cb.showText(project);
 
                 cb.endText();
             }

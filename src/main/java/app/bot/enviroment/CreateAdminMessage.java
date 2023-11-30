@@ -78,14 +78,14 @@ public class CreateAdminMessage {
     public synchronized SendPhoto getPhotoMessage(Long adminChatId, Long userChatId, String photoId, String textToAdmin) {
         buffer.setLength(0);
         buffer.append("Данные клиента: \n").append(getCutString(textToAdmin)).append("</code>\n\n")
-                .append("Для формирования инвойс проверте поступление денег на указанную карту.\nПосле чего подтвердите платеж");
+                .append("Для формирования инвойс проверьте поступление денег на указанную карту.\nПосле чего подтвердите платеж");
 
         SendPhoto msg = new SendPhoto();
         msg.setChatId(adminChatId);
         msg.setPhoto(new InputFile(photoId));
         msg.setCaption(buffer.toString());
         msg.setParseMode(ParseMode.HTML);
-        msg.setReplyMarkup(keyboard.approveOrNot(userChatId));
+        msg.setReplyMarkup(null);
 
         return msg;
     }
@@ -100,7 +100,7 @@ public class CreateAdminMessage {
         msg.setDocument(new InputFile(docId));
         msg.setCaption(buffer.toString());
         msg.setParseMode(ParseMode.HTML);
-        msg.setReplyMarkup(keyboard.approveOrNot(userChatId));
+        msg.setReplyMarkup(null);
 
         return msg;
     }
@@ -127,15 +127,19 @@ public class CreateAdminMessage {
         SendDocument docMsg = new SendDocument();
         docMsg.setChatId(adminChatId);
         docMsg.setDocument(new InputFile(pdf));
-        docMsg.setCaption("Документ готов и передан плательшику.\nВы можете его сохранить и распечатать.");
+        docMsg.setCaption("Документ готов и передан плательщику.\nВы можете его сохранить и распечатать.");
 
         return docMsg;
     }
 
     public SendMessage getExceptionMessage(Long chatId) {
         buffer.setLength(0);
-        buffer.append("Произошла ошибка сохрнения. Нажмите /start и попробуйте еще раз.\nРазаработчик: t.me/i_amallears");
+        buffer.append("Произошла ошибка сохранения. Нажмите /start и попробуйте еще раз.\nРазработчик: t.me/i_amallears");
 
         return getSendMessage(chatId, buffer.toString(), null);
+    }
+
+    public InlineKeyboardMarkup getKeyboardApproveOrNot(int integer) {
+        return keyboard.approveOrNot(integer);
     }
 }

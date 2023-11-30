@@ -39,6 +39,7 @@ public class CreateMessage {
 
         return getSendMessage(chatId, buffer.toString(), keyboard.chooseThePayOption(buttons));
     }
+
     public SendMessage startEnterFullName(Long chatId) {
         buffer.setLength(0);
         buffer.append("Введите пожалуйста ваши ФИО:");
@@ -81,8 +82,9 @@ public class CreateMessage {
         Card card = RandomSelector.getRandomCard(cards);
 
         if (card != null) {
-            buffer.append("ФИО: ").append(receipt.getFullName()).append("\n")
-                    .append("Проект: ").append(receipt.getProject().getStringReceipt()).append("\n")
+            buffer.append("Пользователь: @").append(receipt.getUserName()).append("\n\n")
+                    .append("ФИО: ").append(receipt.getFullName()).append("\n")
+                    .append("Проект: ").append(receipt.getStringReceipt()).append("\n")
                     .append("Сумма: ").append(receipt.getSumInRub()).append(".00RUB\n\n")
                     .append("Данные для перевода: \n")
                     .append("Получатель: ").append(card.getName()).append("\n")

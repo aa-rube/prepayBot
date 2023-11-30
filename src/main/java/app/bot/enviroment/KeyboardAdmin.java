@@ -47,19 +47,19 @@ public class KeyboardAdmin {
         return inLineKeyBoard;
     }
 
-    public ReplyKeyboard approveOrNot(Long userChatId) {
+    public InlineKeyboardMarkup approveOrNot(int msgId) {
         InlineKeyboardMarkup inLineKeyBoard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboardMatrix = new ArrayList<>();
 
         List<InlineKeyboardButton> firstRow = new ArrayList<>();
         InlineKeyboardButton ok = new InlineKeyboardButton();
         ok.setText("ПОДТВЕРДИТЬ");
-        ok.setCallbackData("ok_" + userChatId);
+        ok.setCallbackData("ok_" + msgId);
         firstRow.add(ok);
 
         InlineKeyboardButton no = new InlineKeyboardButton();
         no.setText("ОТКЛОНИТЬ");
-        no.setCallbackData("no_" + userChatId);
+        no.setCallbackData("no_" + msgId);
         firstRow.add(no);
 
         keyboardMatrix.add(firstRow);

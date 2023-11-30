@@ -1,23 +1,55 @@
 package app.bot.model;
 
-import org.telegram.telegrambots.meta.api.objects.Message;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
+@Entity
 public class ReceiptData {
+    @Id
+    @Column(name = "id")
+    private int msgId;
+    private Long chatId;
     private String userName;
     private int sumInRub;
-    private int sumInBth;
+    private double sumInBth;
     private String fullName;
+    @Column(length = 4096)
     private String textToAdmin;
     private boolean startEnterSum;
     private boolean startEnterName;
-    private Project project;
+    private String stringReceipt;
 
-    public Project getProject() {
-        return project;
+    public double getSumInBth() {
+        return sumInBth;
     }
 
-    public void setProject(Project project) {
-        this.project = project;
+    public void setSumInBth(double sumInBth) {
+        this.sumInBth = sumInBth;
+    }
+
+    public int getMsgId() {
+        return msgId;
+    }
+
+    public void setMsgId(int msgId) {
+        this.msgId = msgId;
+    }
+
+    public Long getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(Long chatId) {
+        this.chatId = chatId;
+    }
+
+    public String getStringReceipt() {
+        return stringReceipt;
+    }
+
+    public void setStringReceipt(String stringReceipt) {
+        this.stringReceipt = stringReceipt;
     }
 
     public String getUserName() {
@@ -60,13 +92,6 @@ public class ReceiptData {
         this.sumInRub = sumInRub;
     }
 
-    public int getSumInBth() {
-        return sumInBth;
-    }
-
-    public void setSumInBth(int sumInBth) {
-        this.sumInBth = sumInBth;
-    }
 
     public String getFullName() {
         return fullName;
