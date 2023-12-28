@@ -90,7 +90,7 @@ public class CreateAdminMessage {
         return msg;
     }
 
-    public SendDocument getDocumentMessage(Long adminChatId, Long userChatId, String docId, String textToAdmin) {
+    public SendDocument getDocumentMessage(Long adminChatId, String docId, String textToAdmin) {
         buffer.setLength(0);
         buffer.append("Данные клиента: \n").append(getCutString(textToAdmin)).append("</code>\n\n")
                 .append("Для формирования чека проверьте поступление денег на указанную карту.\nПосле чего подтвердите платеж");

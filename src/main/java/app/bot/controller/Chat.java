@@ -154,14 +154,16 @@ public class Chat extends TelegramLongPollingBot {
             if (message.hasPhoto() && waitForPayScreenShot.contains(chatId)) {
                 waitForPayScreenShot.remove(chatId);
                 String photoId = message.getPhoto().get(0).getFileId();
-                msgId = execute(adminMessage.getPhotoMessage(adminsChat, chatId, photoId, userData.get(chatId).getTextToAdmin())).getMessageId();
+                msgId = execute(adminMessage.getPhotoMessage(adminsChat,
+                        chatId, photoId, userData.get(chatId).getTextToAdmin())).getMessageId();
                 tempDataHandler(adminsChat, chatId, msgId);
             }
 
             if (message.hasDocument() && waitForPayScreenShot.contains(chatId)) {
                 waitForPayScreenShot.remove(chatId);
                 String docId = message.getDocument().getFileId();
-                msgId = execute(adminMessage.getDocumentMessage(adminsChat, chatId, docId, userData.get(chatId).getTextToAdmin())).getMessageId();
+                msgId = execute(adminMessage.getDocumentMessage(adminsChat, docId,
+                        userData.get(chatId).getTextToAdmin())).getMessageId();
                 tempDataHandler(adminsChat, chatId, msgId);
             }
 
@@ -191,7 +193,6 @@ public class Chat extends TelegramLongPollingBot {
         Long adminsChat = botConfig.getAdminsChat();
 
         if (command.contains("/start")) {
-
             if (chatId.equals(adminsChat)) {
                 setUserPercent.clear();
                 executeMsg(adminMessage.getStartMessage(adminsChat));
@@ -417,7 +418,7 @@ public class Chat extends TelegramLongPollingBot {
 
         if (data.equals("payAgain")) {
             userData.put(chatId, new ReceiptData());
-            userData.get(chatId).setUserName(update.getCallbackQuery().getMessage().getFrom().getUserName());
+            userData.get(chatId).setUserName(update.getCallbackQuery().getFrom().getUserName());
             executeMsg(createMessage.getStartMessage(chatId, buttons));
             return;
         }
@@ -426,7 +427,7 @@ public class Chat extends TelegramLongPollingBot {
             userData.remove(chatId);
 
             userData.put(chatId, new ReceiptData());
-            userData.get(chatId).setUserName(update.getCallbackQuery().getMessage().getFrom().getUserName());
+            userData.get(chatId).setUserName(update.getCallbackQuery().getFrom().getUserName());
             userData.get(chatId).setChatId(chatId);
             executeMsg(createMessage.getStartMessage(chatId, buttons));
             userData.get(chatId).setStringReceipt(buttons.get(data).getStringReceipt());
