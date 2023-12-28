@@ -26,8 +26,15 @@ public class KeyboardAdmin {
         list.setCallbackData("cardList");
         firstRow.add(list);
 
+        List<InlineKeyboardButton> secondRow = new ArrayList<>();
+        InlineKeyboardButton percent = new InlineKeyboardButton();
+        percent.setText("Установить процент");
+        percent.setCallbackData("userPercent");
+        secondRow.add(percent);
+
 
         keyboardMatrix.add(firstRow);
+        keyboardMatrix.add(secondRow);
         inLineKeyBoard.setKeyboard(keyboardMatrix);
         return inLineKeyBoard;
     }

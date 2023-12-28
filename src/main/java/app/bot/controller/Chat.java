@@ -49,7 +49,8 @@ public class Chat extends TelegramLongPollingBot {
     private final LinkedHashMap<String, Project> buttons = CreateButtonsData.getAllButtonsData();
     private final Map<Long, ReceiptData> userData = Collections.synchronizedMap(new LinkedHashMap<>());
     private final Map<Integer, ReceiptData> receiptDataMap = Collections.synchronizedMap(new HashMap<>());
-
+    private final Set<Long> setUserPercent = Collections.synchronizedSet(new HashSet<>());
+    private volatile int userPercent;
     @Override
     public String getBotUsername() {
         return botConfig.getBotName();
@@ -64,6 +65,7 @@ public class Chat extends TelegramLongPollingBot {
     private void init() {
         updateCurrencyRate();
         updateCardList();
+        userPercent = CommissionConfig.getCommissionPercent();
 
         for (ReceiptData receiptData : receiptDataService.findAll()) {
             receiptDataMap.put(receiptData.getMsgId(), receiptData);
@@ -191,6 +193,7 @@ public class Chat extends TelegramLongPollingBot {
         if (command.contains("/start")) {
 
             if (chatId.equals(adminsChat)) {
+                setUserPercent.clear();
                 executeMsg(adminMessage.getStartMessage(adminsChat));
                 init();
                 cardData.remove(chatId);
@@ -263,6 +266,19 @@ public class Chat extends TelegramLongPollingBot {
             return;
         }
 
+        if (setUserPercent.contains(chatId) && chatId.equals(botConfig.getAdminsChat())) {
+            try {
+                int i = Integer.parseInt(text.trim().replaceAll(" ", ""));
+                CommissionConfig.setCommissionPercent(i);
+                init();
+                executeMsg(adminMessage.setPercent(chatId, userPercent, 0));
+            } catch (Exception e) {
+                executeMsg(adminMessage.wentWrong(chatId));
+                executeMsg(adminMessage.setPercent(chatId, userPercent, 0));
+            }
+            return;
+        }
+
         if (userData.get(chatId).isStartEnterName()) {
             if (text.split(" ").length > 1) {
                 userData.get(chatId).setFullName(Transliterator.transliterate(text.trim().toUpperCase()));
@@ -285,7 +301,7 @@ public class Chat extends TelegramLongPollingBot {
                     updateCurrencyRate();
                 }
 
-                int rub = SuperAccurateCalculator.calculate(bth, rate.getRubToUSDT(), rate.getUsdtToTHB());
+                int rub = SuperAccurateCalculator.calculate(bth, rate.getRubToUSDT(), rate.getUsdtToTHB(), userPercent);
                 userData.get(chatId).setSumInRub(rub);
                 executeMsg(createMessage.checkTheRubSum(chatId, rub));
             } catch (Exception e) {
@@ -387,6 +403,7 @@ public class Chat extends TelegramLongPollingBot {
 
             cardData.remove(chatId);
             startEnterCardData.remove(chatId);
+            setUserPercent.clear();
             executeMsg(adminMessage.getStartMessage(chatId));
             return;
         }
@@ -416,6 +433,12 @@ public class Chat extends TelegramLongPollingBot {
             userData.get(chatId).setStartEnterName(true);
             executeMsg(createMessage.startEnterFullName(chatId));
             return;
+        }
+
+
+        if (data.equals("userPercent")) {
+            setUserPercent.add(chatId);
+            executeMsg(adminMessage.setPercent(chatId, userPercent,0));
         }
     }
 

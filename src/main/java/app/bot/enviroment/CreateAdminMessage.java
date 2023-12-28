@@ -142,4 +142,23 @@ public class CreateAdminMessage {
     public InlineKeyboardMarkup getKeyboardApproveOrNot(int integer) {
         return keyboard.approveOrNot(integer);
     }
+
+    public SendMessage setPercent(Long chatId, int userPercent, int i) {
+        buffer.setLength(0);
+
+        if (i > 0) {
+            buffer.append("Новое значение установлено!\n\n");
+        }
+
+        buffer.append("Добавочный процент сейчас: ").append(userPercent).append("%").append("\n\n")
+                .append("Введите новое значение ввиде числа").append(i > 0 ? " если это необходимо" : "");
+
+        return getSendMessage(chatId, buffer.toString(), keyboard.getBackMain());
+    }
+
+    public SendMessage wentWrong(Long chatId) {
+        buffer.setLength(0);
+        buffer.append("Что-то пошло не так. Повторите попытку.");
+        return getSendMessage(chatId, buffer.toString(), null);
+    }
 }
