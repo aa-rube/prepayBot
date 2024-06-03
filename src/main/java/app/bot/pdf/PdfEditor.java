@@ -1,11 +1,9 @@
 package app.bot.pdf;
 
-import app.bot.model.Project;
 import com.itextpdf.text.pdf.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.time.*;
 import java.time.format.DateTimeFormatter;

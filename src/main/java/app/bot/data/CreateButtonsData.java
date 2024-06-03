@@ -1,9 +1,8 @@
-package app.bot.enviroment;
+package app.bot.data;
 import app.bot.model.Project;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.Map;
+
 public class CreateButtonsData {
     private static final LinkedHashMap<String, Project> buttons = new LinkedHashMap<>();
     public synchronized static LinkedHashMap<String, Project> getAllButtonsData() {

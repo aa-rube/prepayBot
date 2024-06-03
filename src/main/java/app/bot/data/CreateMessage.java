@@ -1,11 +1,11 @@
-package app.bot.enviroment;
+package app.bot.data;
 
 import app.bot.model.Card;
 import app.bot.model.Project;
 import app.bot.model.ReceiptData;
+import app.bot.util.RandomSelector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -13,9 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class CreateMessage {

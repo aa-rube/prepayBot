@@ -1,4 +1,4 @@
-package app.bot.enviroment;
+package app.bot.util;
 
 import app.bot.model.Card;
 

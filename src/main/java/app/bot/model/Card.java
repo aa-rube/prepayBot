@@ -1,7 +1,11 @@
 package app.bot.model;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "cards")
 public class Card {
     @Id
@@ -12,20 +16,4 @@ public class Card {
 
     private String name;
 
-    public void setCardNumber(String cardNumber) {
-        this.cardNumber = cardNumber;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getName() {
-        return name;
-    }
-    public int getId() {
-        return id;
-    }
-    public String getCardNumber() {
-        return cardNumber;
-    }
 }

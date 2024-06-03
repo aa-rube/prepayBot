@@ -1,4 +1,4 @@
-package app.bot.enviroment;
+package app.bot.util;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;

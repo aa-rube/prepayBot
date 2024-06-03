@@ -1,4 +1,4 @@
-package app.bot.enviroment;
+package app.bot.util;
 
 import org.springframework.stereotype.Service;
 import java.util.Collections;

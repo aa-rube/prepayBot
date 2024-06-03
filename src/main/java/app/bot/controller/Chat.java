@@ -1,7 +1,7 @@
 package app.bot.controller;
 
 import app.bot.api.CryptoAPI;
-import app.bot.enviroment.*;
+import app.bot.data.*;
 import app.bot.config.BotConfig;
 import app.bot.model.Card;
 import app.bot.model.Project;
@@ -10,6 +10,9 @@ import app.bot.model.ReceiptData;
 import app.bot.pdf.PdfEditor;
 import app.bot.service.CardService;
 import app.bot.service.ReceiptDataService;
+import app.bot.util.CommissionConfig;
+import app.bot.util.SuperAccurateCalculator;
+import app.bot.util.Transliterator;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ForwardMessage;
@@ -106,6 +109,7 @@ public class Chat extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+
         Thread thread = new Thread(() -> {
             if (update.hasMessage() && update.getMessage().isReply()) {
                 replayHandle(update);

@@ -1,4 +1,4 @@
-package app.bot.enviroment;
+package app.bot.data;
 
 import app.bot.model.Card;
 import org.springframework.beans.factory.annotation.Autowired;
