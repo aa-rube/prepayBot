@@ -35,6 +35,9 @@ public class CryptoAPI {
             response.append(inputLine);
         }
         in.close();
+
+        System.out.println(response.toString());
+
         return response.toString();
     }
 }
