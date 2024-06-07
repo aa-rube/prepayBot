@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 public class CryptoAPI {
-    private static final String apiKey ="545872a65b7237d9a9f07a9a87df174240a77e56ccf68f38ffec15f9f70231ce";
+    private static final String apiKey ="a1355d33fa642a7392e8ba4cee83909f72b68fdf572d4ca40ea617bf3be3c2d9";
     public static double getPrice(String from, String to) {
         ObjectMapper mapper = new ObjectMapper();
         try {
