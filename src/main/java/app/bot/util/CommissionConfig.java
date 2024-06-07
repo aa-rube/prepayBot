@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 public class CommissionConfig {
-    private static final String CONFIG_FILE = "/root/prepayBot/commission.percent";
+    private static final String CONFIG_FILE = "/root/prepayBot/config.properties";
 
     private static Properties properties;
 
@@ -16,12 +16,12 @@ public class CommissionConfig {
     }
 
     public static void setCommissionPercent(int percent) {
-        properties.setProperty(CONFIG_FILE, String.valueOf(percent));
+        properties.setProperty("commission.percent", String.valueOf(percent));
         saveConfig();
     }
 
     public static int getCommissionPercent() {
-        return Integer.parseInt(properties.getProperty(CONFIG_FILE, "0"));
+        return Integer.parseInt(properties.getProperty("commission.percent", "0"));
     }
 
     private static void loadConfig() {
